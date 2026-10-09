@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Usage : ./set-base-url.sh https://mon-hote.example.com/chemin
+set -euo pipefail
+NEW="${1%/}"
+OLD="https://amwebexpert.github.io/outlook-recipient-guard"
+ORIGIN=$(echo "$NEW" | sed -E 's|^(https://[^/]+).*|\1|')
+sed -i.bak -e "s|$OLD|$NEW|g" -e "s|<AppDomain>https://amwebexpert.github.io</AppDomain>|<AppDomain>$ORIGIN</AppDomain>|" manifest.xml
+rm -f manifest.xml.bak
+echo "manifest.xml -> $NEW"
