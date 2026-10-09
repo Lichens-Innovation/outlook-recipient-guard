@@ -20,8 +20,10 @@ The rule list **is not in the code**: it is stored in your mailbox's
 ## Installation
 
 1. **Host the files over HTTPS.** The manifest only contains URLs; Outlook loads the JS
-   from the web. Simplest option: a GitHub repo `outlook-recipient-guard` with GitHub Pages
-   enabled (Settings → Pages → branch `main`, folder `/`).
+   from the web. This repo deploys itself to GitHub Pages on every push to `main`
+   (`.github/workflows/pages.yml`, Settings → Pages → Source: *GitHub Actions*). The workflow
+   fails if a file referenced by `manifest.xml` is missing, if the Pages URL differs from the
+   manifest's base URL, or if any manifest URL does not return 200.
    The default expected URL is `https://lichens-innovation.github.io/outlook-recipient-guard/`.
    Different host? `./set-base-url.sh https://my-host/path` updates the manifest.
 2. Check that `https://…/commands.html` and `https://…/launchevent.js` respond.

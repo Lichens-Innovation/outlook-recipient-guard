@@ -1,0 +1,93 @@
+# Deploys the add-in files to GitHub Pages on every push to main, then checks that
+# every URL referenced by manifest.xml is served (HTTP 200).
+name: Deploy add-in to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      base: ${{ steps.urls.outputs.base }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Collect manifest URLs
+        id: urls
+        run: |
+          # Base URL = folder that holds taskpane.html.
+          base=$(grep -oE 'https://[^"]+/taskpane\.html' manifest.xml | head -1 | sed 's|/taskpane\.html$||')
+          test -n "$base" || { echo "::error::taskpane.html URL not found in manifest.xml"; exit 1; }
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          grep -oE 'DefaultValue="https://[^"]+"' manifest.xml | sed -E 's/^DefaultValue="(.*)"$/\1/' | sort -u > urls.txt
+          cat urls.txt
+
+      - name: Assemble site
+        run: |
+          mkdir _site
+          cp -R index.html manifest.xml commands.html taskpane.html launchevent.js assets _site/
+          touch _site/.nojekyll
+          # Every manifest URL must map to a file in the site.
+          base="${{ steps.urls.outputs.base }}"
+          missing=0
+          while read -r url; do
+            case "$url" in "$base"/*) ;; *) echo "::error::$url is outside $base"; missing=1; continue ;; esac
+            path="${url#"$base"/}"
+            [ -z "$path" ] && path=index.html
+            [ -f "_site/$path" ] || { echo "::error::manifest references missing file: $path"; missing=1; }
+          done < urls.txt
+          exit $missing
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Check deployed URL matches manifest
+        run: |
+          expected="${{ needs.build.outputs.base }}"
+          actual="${{ steps.deployment.outputs.page_url }}"
+          if [ "${actual%/}" != "${expected%/}" ]; then
+            echo "::error::Pages URL is $actual but manifest.xml points to $expected. Run ./set-base-url.sh $actual, bump <Version>, and reinstall the add-in."
+            exit 1
+          fi
+
+      - name: Check every manifest URL returns 200
+        run: |
+          grep -oE 'DefaultValue="https://[^"]+"' manifest.xml | sed -E 's/^DefaultValue="(.*)"$/\1/' | sort -u > urls.txt
+          failed=0
+          while read -r url; do
+            # Pages can take a moment to propagate after deploy.
+            for i in 1 2 3 4 5 6; do
+              code=$(curl -s -o /dev/null -w '%{http_code}' "$url")
+              [ "$code" = 200 ] && break
+              sleep 10
+            done
+            echo "$code $url"
+            [ "$code" = 200 ] || failed=1
+          done < urls.txt
+          exit $failed
