@@ -10,8 +10,8 @@
            xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides/1.0"
            xsi:type="MailApp">
   <Id>578a46a9-b884-4957-bd09-878649977dda</Id>
-  <Version>1.0.0.1</Version>
-  <ProviderName>amwebexpert</ProviderName>
+  <Version>1.0.0.2</Version>
+  <ProviderName>Lichens Innovations</ProviderName>
   <DefaultLocale>fr-CA</DefaultLocale>
   <DisplayName DefaultValue="Recipient Guard"/>
   <Description DefaultValue="Alerte avant l'envoi si un destinataire correspond à une liste d'adresses à surveiller."/>
