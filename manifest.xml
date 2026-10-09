@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   Recipient Guard — manifeste XML pour Outlook (sideload via « Add a custom add-in → Add from File »).
-  Remplacer https://amwebexpert.github.io/outlook-recipient-guard par l'URL HTTPS où les fichiers sont hébergés.
+  Remplacer https://lichens-innovation.github.io/outlook-recipient-guard par l'URL HTTPS où les fichiers sont hébergés.
 -->
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -9,16 +9,16 @@
            xmlns:mailappor="http://schemas.microsoft.com/office/mailappversionoverrides/1.0"
            xsi:type="MailApp">
   <Id>578a46a9-b884-4957-bd09-878649977dda</Id>
-  <Version>1.0.0.0</Version>
+  <Version>1.0.0.1</Version>
   <ProviderName>amwebexpert</ProviderName>
   <DefaultLocale>fr-CA</DefaultLocale>
   <DisplayName DefaultValue="Recipient Guard"/>
   <Description DefaultValue="Alerte avant l'envoi si un destinataire correspond à une liste d'adresses à surveiller."/>
-  <IconUrl DefaultValue="https://amwebexpert.github.io/outlook-recipient-guard/assets/icon-64.png"/>
-  <HighResolutionIconUrl DefaultValue="https://amwebexpert.github.io/outlook-recipient-guard/assets/icon-128.png"/>
-  <SupportUrl DefaultValue="https://amwebexpert.github.io/outlook-recipient-guard/"/>
+  <IconUrl DefaultValue="https://lichens-innovation.github.io/outlook-recipient-guard/assets/icon-64.png"/>
+  <HighResolutionIconUrl DefaultValue="https://lichens-innovation.github.io/outlook-recipient-guard/assets/icon-128.png"/>
+  <SupportUrl DefaultValue="https://lichens-innovation.github.io/outlook-recipient-guard/"/>
   <AppDomains>
-    <AppDomain>https://amwebexpert.github.io</AppDomain>
+    <AppDomain>https://lichens-innovation.github.io</AppDomain>
   </AppDomains>
   <Hosts>
     <Host Name="Mailbox"/>
@@ -31,7 +31,7 @@
   <FormSettings>
     <Form xsi:type="ItemEdit">
       <DesktopSettings>
-        <SourceLocation DefaultValue="https://amwebexpert.github.io/outlook-recipient-guard/taskpane.html"/>
+        <SourceLocation DefaultValue="https://lichens-innovation.github.io/outlook-recipient-guard/taskpane.html"/>
       </DesktopSettings>
     </Form>
   </FormSettings>
@@ -95,15 +95,15 @@
       </Hosts>
       <Resources>
         <bt:Images>
-          <bt:Image id="Icon.16" DefaultValue="https://amwebexpert.github.io/outlook-recipient-guard/assets/icon-16.png"/>
-          <bt:Image id="Icon.32" DefaultValue="https://amwebexpert.github.io/outlook-recipient-guard/assets/icon-32.png"/>
-          <bt:Image id="Icon.80" DefaultValue="https://amwebexpert.github.io/outlook-recipient-guard/assets/icon-80.png"/>
+          <bt:Image id="Icon.16" DefaultValue="https://lichens-innovation.github.io/outlook-recipient-guard/assets/icon-16.png"/>
+          <bt:Image id="Icon.32" DefaultValue="https://lichens-innovation.github.io/outlook-recipient-guard/assets/icon-32.png"/>
+          <bt:Image id="Icon.80" DefaultValue="https://lichens-innovation.github.io/outlook-recipient-guard/assets/icon-80.png"/>
         </bt:Images>
         <bt:Urls>
-          <bt:Url id="Commands.Url" DefaultValue="https://amwebexpert.github.io/outlook-recipient-guard/commands.html"/>
-          <bt:Url id="Taskpane.Url" DefaultValue="https://amwebexpert.github.io/outlook-recipient-guard/taskpane.html"/>
-          <bt:Url id="WebViewRuntime.Url" DefaultValue="https://amwebexpert.github.io/outlook-recipient-guard/commands.html"/>
-          <bt:Url id="JSRuntime.Url" DefaultValue="https://amwebexpert.github.io/outlook-recipient-guard/launchevent.js"/>
+          <bt:Url id="Commands.Url" DefaultValue="https://lichens-innovation.github.io/outlook-recipient-guard/commands.html"/>
+          <bt:Url id="Taskpane.Url" DefaultValue="https://lichens-innovation.github.io/outlook-recipient-guard/taskpane.html"/>
+          <bt:Url id="WebViewRuntime.Url" DefaultValue="https://lichens-innovation.github.io/outlook-recipient-guard/commands.html"/>
+          <bt:Url id="JSRuntime.Url" DefaultValue="https://lichens-innovation.github.io/outlook-recipient-guard/launchevent.js"/>
         </bt:Urls>
         <bt:ShortStrings>
           <bt:String id="Group.Label" DefaultValue="Recipient Guard"/>

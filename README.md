@@ -22,7 +22,7 @@ La liste des règles **n'est pas dans le code** : elle est enregistrée dans les
 1. **Héberger les fichiers en HTTPS.** Le manifeste ne contient que des URL ; Outlook
    charge le JS depuis le web. Le plus simple : un repo GitHub `outlook-recipient-guard`
    avec GitHub Pages activé (Settings → Pages → branche `main`, dossier `/`).
-   L'URL attendue par défaut est `https://amwebexpert.github.io/outlook-recipient-guard/`.
+   L'URL attendue par défaut est `https://lichens-innovation.github.io/outlook-recipient-guard/`.
    Autre hôte ? `./set-base-url.sh https://mon-hote/chemin` met à jour le manifeste.
 2. Vérifier que `https://…/commands.html` et `https://…/launchevent.js` répondent.
 3. Outlook → *Add-ins* → *My add-ins* → **Add a custom add-in → Add from File** →
