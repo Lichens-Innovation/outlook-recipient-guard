@@ -6,6 +6,10 @@
   <title>Recipient Guard — runtime</title>
   <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   <script type="text/javascript" src="launchevent.js"></script>
+  <script type="text/javascript">
+    // Completes the office.js handshake so Outlook can dispatch the send event to this runtime.
+    Office.onReady();
+  </script>
 </head>
 <body></body>
 </html>
