@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Usage : ./set-base-url.sh https://mon-hote.example.com/chemin
+# Usage: ./set-base-url.sh https://my-host.example.com/path
 set -euo pipefail
 NEW="${1%/}"
 OLD="https://lichens-innovation.github.io/outlook-recipient-guard"

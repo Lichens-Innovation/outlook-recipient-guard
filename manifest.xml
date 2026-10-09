@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Recipient Guard — manifeste XML pour Outlook (sideload via « Add a custom add-in → Add from File »).
-  Remplacer https://lichens-innovation.github.io/outlook-recipient-guard par l'URL HTTPS où les fichiers sont hébergés.
+  Recipient Guard — XML manifest for Outlook (sideload via "Add a custom add-in → Add from File").
+  Replace https://lichens-innovation.github.io/outlook-recipient-guard with the HTTPS URL where the files are hosted
+  (or run ./set-base-url.sh).
 -->
 <OfficeApp xmlns="http://schemas.microsoft.com/office/appforoffice/1.1"
            xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -51,7 +52,7 @@
       <Hosts>
         <Host xsi:type="MailHost">
           <Runtimes>
-            <!-- HTML pour Outlook web / nouveau Outlook / Mac ; JS seul pour Outlook classique Windows -->
+            <!-- HTML for Outlook on the web / new Outlook / Mac; JS only for classic Outlook on Windows -->
             <Runtime resid="WebViewRuntime.Url">
               <Override type="javascript" resid="JSRuntime.Url"/>
             </Runtime>
@@ -59,7 +60,7 @@
           <DesktopFormFactor>
             <FunctionFile resid="Commands.Url"/>
 
-            <!-- Bouton dans le ruban de composition pour ouvrir le volet de configuration -->
+            <!-- Compose ribbon button that opens the configuration task pane -->
             <ExtensionPoint xsi:type="MessageComposeCommandSurface">
               <OfficeTab id="TabDefault">
                 <Group id="rgGroup">
@@ -83,7 +84,7 @@
               </OfficeTab>
             </ExtensionPoint>
 
-            <!-- Smart Alerts : intercepte l'envoi -->
+            <!-- Smart Alerts: intercepts send -->
             <ExtensionPoint xsi:type="LaunchEvent">
               <LaunchEvents>
                 <LaunchEvent Type="OnMessageSend" FunctionName="onMessageSendHandler" SendMode="PromptUser"/>

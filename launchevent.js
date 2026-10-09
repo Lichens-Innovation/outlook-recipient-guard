@@ -1,21 +1,21 @@
 /*
- * Recipient Guard — handler OnMessageSend (Smart Alerts)
+ * Recipient Guard — OnMessageSend handler (Smart Alerts)
  *
- * Lit la configuration dans les roamingSettings de la boîte (éditée via le volet
- * « Recipient Guard » du ruban), compare les destinataires To/Cc/Bcc et, en cas de
- * correspondance, bloque l'envoi avec une alerte « Envoyer quand même / Ne pas envoyer ».
+ * Reads the configuration from the mailbox roamingSettings (edited via the
+ * "Recipient Guard" ribbon task pane), checks the To/Cc/Bcc recipients and, on a
+ * match, blocks the send with a "Send anyway / Don't send" alert.
  *
- * Code volontairement sans async/await ni optional chaining : il doit tourner dans le
- * runtime JavaScript-only d'Outlook classique pour Windows.
+ * Intentionally written without async/await or optional chaining: it must run in the
+ * JavaScript-only runtime of classic Outlook for Windows.
  */
 
 var RG_SETTINGS_KEY = "rg.config";
 
-// Valeurs par défaut si rien n'a encore été enregistré via le volet.
+// Defaults used when nothing has been saved from the task pane yet.
 var RG_DEFAULT_CONFIG = {
-  rules: "",              // une règle par ligne (voir parseRules)
-  warnExternal: false,    // alerter pour tout domaine hors internalDomains
-  internalDomains: ""     // ex. "lichens.ai, lichens.com"
+  rules: "",              // one rule per line (see parseRules)
+  warnExternal: false,    // alert for any domain not in internalDomains
+  internalDomains: ""     // e.g. "lichens.ai, lichens.com"
 };
 
 function rgLoadConfig() {
@@ -33,12 +33,12 @@ function rgLoadConfig() {
 }
 
 /*
- * Syntaxe des règles (insensible à la casse) :
- *   jean.tremblay@gmail.com      adresse exacte
- *   @ancien-client.com           tout le domaine (équivaut à *@ancien-client.com)
- *   jean*@*                      jokers * acceptés partout
- *   # commentaire                ignoré
- *   x@y.com | Adresse perso      texte après « | » = raison affichée dans l'alerte
+ * Rule syntax (case-insensitive):
+ *   jean.tremblay@gmail.com      exact address
+ *   @ancien-client.com           whole domain (same as *@ancien-client.com)
+ *   jean*@*                      * wildcards allowed anywhere
+ *   # comment                    ignored
+ *   x@y.com | Personal address   text after "|" = reason shown in the alert
  */
 function rgParseRules(text) {
   var rules = [];
@@ -113,7 +113,7 @@ function rgFindMatches(recipients, cfg) {
 function rgBuildMessage(hits) {
   var lines = hits.map(function (h) { return h.address + " (" + h.why + ")"; });
   var msg = "Destinataire(s) à vérifier : " + lines.join(", ") + ". Envoyer quand même ?";
-  // Limite Outlook : 500 caractères.
+  // Outlook limit: 500 characters.
   if (msg.length > 500) {
     msg = "Destinataire(s) à vérifier (" + hits.length + ") : " + lines.join(", ");
     msg = msg.slice(0, 470) + "… Envoyer quand même ?";
@@ -141,7 +141,7 @@ function onMessageSendHandler(event) {
         }
       })
       .catch(function () {
-        // En cas d'erreur, ne jamais bloquer l'utilisateur.
+        // On error, never block the user.
         event.completed({ allowEvent: true });
       });
   } catch (e) {
@@ -149,7 +149,7 @@ function onMessageSendHandler(event) {
   }
 }
 
-// Exposé pour le volet (bouton « Tester »).
+// Exposed for the task pane ("Test" button).
 if (typeof window !== "undefined") {
   window.rgParseRules = rgParseRules;
   window.rgFindMatches = rgFindMatches;
@@ -157,11 +157,11 @@ if (typeof window !== "undefined") {
   window.rgLoadConfig = rgLoadConfig;
 }
 
-// Enregistrement du handler (requis sur toutes les plateformes).
+// Handler registration (required on all platforms).
 try {
   if (typeof Office !== "undefined" && Office.actions) {
     Office.actions.associate("onMessageSendHandler", onMessageSendHandler);
   }
 } catch (e) {
-  // Ignoré dans le volet (taskpane), où Office.actions n'est pas pertinent.
+  // Ignored in the task pane, where Office.actions does not apply.
 }

@@ -1,57 +1,57 @@
-# Recipient Guard — add-in Outlook
+# Recipient Guard — Outlook add-in
 
-Intercepte l'envoi (Smart Alerts, événement `OnMessageSend`) et affiche une alerte
-**« Envoyer quand même / Ne pas envoyer »** si un destinataire (À, Cc, Cci) correspond
-à une règle. Protège contre les erreurs d'autocomplétion.
+Intercepts sending (Smart Alerts, `OnMessageSend` event) and shows a
+**"Send anyway / Don't send"** alert if a recipient (To, Cc, Bcc) matches a rule.
+Protects against autocomplete mistakes.
 
-## Fichiers
+## Files
 
-| Fichier | Rôle |
+| File | Purpose |
 |---|---|
-| `manifest.xml` | À charger dans Outlook via *Add a custom add-in → Add from File* |
-| `launchevent.js` | Logique de vérification (handler `onMessageSendHandler`) |
-| `commands.html` | Runtime HTML (Outlook web, nouveau Outlook, Mac) |
-| `taskpane.html` | Volet de configuration (bouton « Destinataires surveillés » en composition) |
-| `assets/` | Icônes |
+| `manifest.xml` | Load in Outlook via *Add a custom add-in → Add from File* |
+| `launchevent.js` | Check logic (`onMessageSendHandler` handler) |
+| `commands.html` | HTML runtime (Outlook on the web, new Outlook, Mac) |
+| `taskpane.html` | Configuration task pane ("Destinataires surveillés" button while composing) |
+| `assets/` | Icons |
 
-La liste des règles **n'est pas dans le code** : elle est enregistrée dans les
-`roamingSettings` de ta boîte aux lettres (privée, suit ton compte sur tous les clients).
+The rule list **is not in the code**: it is stored in your mailbox's
+`roamingSettings` (private, follows your account across all clients).
 
 ## Installation
 
-1. **Héberger les fichiers en HTTPS.** Le manifeste ne contient que des URL ; Outlook
-   charge le JS depuis le web. Le plus simple : un repo GitHub `outlook-recipient-guard`
-   avec GitHub Pages activé (Settings → Pages → branche `main`, dossier `/`).
-   L'URL attendue par défaut est `https://lichens-innovation.github.io/outlook-recipient-guard/`.
-   Autre hôte ? `./set-base-url.sh https://mon-hote/chemin` met à jour le manifeste.
-2. Vérifier que `https://…/commands.html` et `https://…/launchevent.js` répondent.
+1. **Host the files over HTTPS.** The manifest only contains URLs; Outlook loads the JS
+   from the web. Simplest option: a GitHub repo `outlook-recipient-guard` with GitHub Pages
+   enabled (Settings → Pages → branch `main`, folder `/`).
+   The default expected URL is `https://lichens-innovation.github.io/outlook-recipient-guard/`.
+   Different host? `./set-base-url.sh https://my-host/path` updates the manifest.
+2. Check that `https://…/commands.html` and `https://…/launchevent.js` respond.
 3. Outlook → *Add-ins* → *My add-ins* → **Add a custom add-in → Add from File** →
    `manifest.xml`.
-4. Ouvrir un nouveau courriel → ruban → **Destinataires surveillés** → saisir les règles →
-   *Enregistrer*. Le bouton *Tester ce brouillon* vérifie les destinataires actuels.
+4. Open a new email → ribbon → **Destinataires surveillés** → enter rules →
+   *Enregistrer* (Save). The *Tester ce brouillon* (Test this draft) button checks the current recipients.
 
-## Syntaxe des règles
+## Rule syntax
 
 ```
-# commentaire
-jean.tremblay@gmail.com | Adresse perso de Jean     ← exacte + raison affichée
-@ancien-client.com                                  ← tout le domaine
-andre*@gmail.com                                    ← jokers *
+# comment
+jean.tremblay@gmail.com | Jean's personal address   ← exact + reason shown
+@ancien-client.com                                  ← whole domain
+andre*@gmail.com                                    ← * wildcards
 ```
 
-Option : *Alerter aussi pour tout destinataire externe* + liste de domaines internes
-(ex. `lichens.ai`) — les sous-domaines sont considérés internes.
+Option: *Also alert for any external recipient* + list of internal domains
+(e.g. `lichens.ai`) — subdomains are considered internal.
 
-## Comportement
+## Behavior
 
-- `SendMode="PromptUser"` : l'alerte propose **Ne pas envoyer** (retour au brouillon)
-  ou **Envoyer quand même**. Pour bloquer sans possibilité de contourner, remplacer par
-  `SoftBlock` dans le manifeste.
-- En cas d'erreur du script, l'envoi n'est jamais bloqué.
-- Requiert Mailbox 1.12 : Outlook web, nouveau Outlook (Windows/Mac), Outlook classique
-  Windows récent. Pas de support sur mobile (l'envoi passe sans vérification).
+- `SendMode="PromptUser"`: the alert offers **Don't send** (back to the draft)
+  or **Send anyway**. To block with no way to override, change it to
+  `SoftBlock` in the manifest.
+- If the script errors, sending is never blocked.
+- Requires Mailbox 1.12: Outlook on the web, new Outlook (Windows/Mac), recent classic
+  Outlook for Windows. Not supported on mobile (mail is sent without checking).
 
-## Mise à jour
+## Updating
 
-- Modifier le JS/HTML → pousser sur l'hôte (cache Outlook : vider ou attendre quelques minutes).
-- Modifier le manifeste → incrémenter `<Version>`, retirer puis rajouter l'add-in.
+- JS/HTML changes → push to the host (Outlook cache: clear it or wait a few minutes).
+- Manifest changes → increment `<Version>`, remove then re-add the add-in.
