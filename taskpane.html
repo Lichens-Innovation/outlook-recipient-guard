@@ -7,6 +7,7 @@
   <script type="text/javascript" src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
   <script type="text/javascript" src="launchevent.js"></script>
   <style>
+    html { background: #fff; }
     body { font: 14px/1.4 "Segoe UI", -apple-system, sans-serif; margin: 12px; color: #1f2328; }
     h1 { font-size: 16px; margin: 0 0 8px; }
     label { display: block; font-weight: 600; margin: 12px 0 4px; }
@@ -71,19 +72,15 @@
       };
 
       $("test").onclick = function () {
-        var item = Office.context.mailbox.item;
-        var fields = [item.to, item.cc, item.bcc];
-        Promise.all(fields.map(function (f) {
-          return new Promise(function (res) {
-            if (!f || !f.getAsync) return res([]);
-            f.getAsync(function (r) { res(r.status === "succeeded" ? r.value : []); });
-          });
-        })).then(function (lists) {
-          var hits = rgFindMatches(lists[0].concat(lists[1], lists[2]), readForm());
-          var out = $("result"); out.hidden = false;
-          out.textContent = hits.length
+        var out = $("result"); out.hidden = false;
+        out.textContent = "Vérification…";
+        rgGetAllRecipients(Office.context.mailbox.item).then(function (res) {
+          var hits = rgFindMatches(res.recipients, readForm());
+          out.textContent = (hits.length
             ? "⚠ " + hits.map(function (h) { return h.address + "  (" + h.why + ")"; }).join("\n⚠ ")
-            : "Aucun destinataire signalé.";
+            : "Aucun destinataire signalé.") + "\n\n[diag] " + res.diag;
+        }, function (e) {
+          out.textContent = "Erreur : " + (e && e.message);
         });
       };
     });

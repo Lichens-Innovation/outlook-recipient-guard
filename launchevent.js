@@ -69,12 +69,44 @@ function rgParseDomains(text) {
     .filter(function (d) { return d.length > 0; });
 }
 
-function rgGetRecipients(field) {
+// A getAsync callback that never fires must not hang the send.
+var RG_GETASYNC_TIMEOUT_MS = 3000;
+
+// Resolves { label, status, value } and never rejects. status is "ok" or the failure reason.
+function rgGetRecipients(field, label) {
   return new Promise(function (resolve) {
-    if (!field || !field.getAsync) return resolve([]);
-    field.getAsync(function (res) {
-      resolve(res.status === Office.AsyncResultStatus.Succeeded ? res.value || [] : []);
+    var done = false;
+    function finish(value, status) {
+      if (done) return;
+      done = true;
+      resolve({ label: label, status: status, value: value });
+    }
+    if (!field || !field.getAsync) return finish([], "unavailable");
+    setTimeout(function () { finish([], "timeout"); }, RG_GETASYNC_TIMEOUT_MS);
+    try {
+      field.getAsync(function (res) {
+        if (res.status === Office.AsyncResultStatus.Succeeded) finish(res.value || [], "ok");
+        else finish([], "failed: " + (res.error ? res.error.message : "unknown"));
+      });
+    } catch (e) {
+      finish([], "error: " + e.message);
+    }
+  });
+}
+
+// Resolves { recipients, diag } where diag is e.g. "to: ok (1), cc: ok (0), bcc: timeout".
+function rgGetAllRecipients(item) {
+  return Promise.all([
+    rgGetRecipients(item.to, "to"),
+    rgGetRecipients(item.cc, "cc"),
+    rgGetRecipients(item.bcc, "bcc")
+  ]).then(function (results) {
+    var recipients = [];
+    var diag = results.map(function (r) {
+      recipients = recipients.concat(r.value);
+      return r.label + ": " + r.status + (r.status === "ok" ? " (" + r.value.length + ")" : "");
     });
+    return { recipients: recipients, diag: diag.join(", ") };
   });
 }
 
@@ -126,14 +158,9 @@ function onMessageSendHandler(event) {
     var item = Office.context.mailbox.item;
     var cfg = rgLoadConfig();
 
-    Promise.all([
-      rgGetRecipients(item.to),
-      rgGetRecipients(item.cc),
-      rgGetRecipients(item.bcc)
-    ])
-      .then(function (lists) {
-        var all = lists[0].concat(lists[1], lists[2]);
-        var hits = rgFindMatches(all, cfg);
+    rgGetAllRecipients(item)
+      .then(function (res) {
+        var hits = rgFindMatches(res.recipients, cfg);
         if (hits.length === 0) {
           event.completed({ allowEvent: true });
         } else {
@@ -153,6 +180,7 @@ function onMessageSendHandler(event) {
 if (typeof window !== "undefined") {
   window.rgParseRules = rgParseRules;
   window.rgFindMatches = rgFindMatches;
+  window.rgGetAllRecipients = rgGetAllRecipients;
   window.RG_SETTINGS_KEY = RG_SETTINGS_KEY;
   window.rgLoadConfig = rgLoadConfig;
 }
